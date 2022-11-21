@@ -1,10 +1,15 @@
-use std::ops::{Index, IndexMut};
+use std::{
+    fmt::{Debug, Display},
+    ops::{Index, IndexMut},
+    slice::{Iter, IterMut},
+};
 
 use crate::point::Point;
 
 /// A [dense] fixed-size grid that stores elements using a [`Vec`].
 ///
 /// [dense]: https://stackoverflow.com/questions/39030196/what-exactly-is-a-dense-array
+#[derive(Clone)]
 pub struct Grid<T>
 where
     T: Clone,
@@ -150,6 +155,98 @@ where
     /// ```
     pub fn area(&self) -> usize {
         self.width() * self.height()
+    }
+}
+
+impl<T> Debug for Grid<T>
+where
+    T: Clone + Debug,
+{
+    /// Formats the grid into string output for debugging.
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Grid")
+            .field("data", &self.data)
+            .field("width", &self.width)
+            .field("height", &self.height)
+            .finish()
+    }
+}
+
+impl<T> Display for Grid<T>
+where
+    T: Clone + Display,
+{
+    /// Formats the grid into a multi-line string output.
+    ///
+    /// If `T` is [`Display`] and is represented by a consistent sized grapheme cluster, the effect
+    /// is similar to using a text-based user interface to output grahaeme clusters in a 2D grid:
+    ///
+    /// ```
+    /// use grud::Grid;
+    ///
+    /// let grid = Grid::with_width(3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    ///
+    /// // 123
+    /// // 456
+    /// // 789
+    /// assert_eq!(format!("{}", grid), "123\n456\n789\n");
+    /// ```
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for j in 0..self.height() {
+            for i in 0..self.width() {
+                write!(f, "{}", self[(i, j)])?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
+impl<'a, T> IntoIterator for &'a Grid<T>
+where
+    T: Clone,
+{
+    type Item = &'a T;
+    type IntoIter = Iter<'a, T>;
+
+    /// Returns an iterator that walks the grid in indexed order.
+    ///
+    /// ```
+    /// use grud::Grid;
+    ///
+    /// let grid = Grid::with_width(2, vec!["a", "b", "c", "d"]);
+    ///
+    /// let items: Vec<String> = grid.into_iter().map(|i| i.to_ascii_uppercase()).collect();
+    ///
+    /// assert_eq!(items, vec!["A", "B", "C", "D"]);
+    /// ```
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter()
+    }
+}
+
+impl<'a, T> IntoIterator for &'a mut Grid<T>
+where
+    T: Clone,
+{
+    type Item = &'a mut T;
+    type IntoIter = IterMut<'a, T>;
+
+    /// Returns an iterator that walks the grid in indexed order with mutable references.
+    ///
+    /// ```
+    /// use grud::Grid;
+    ///
+    /// let mut grid = Grid::with_width(2, vec![1, 2, 3, 4]);
+    ///
+    /// for i in &mut grid {
+    ///   *i += 1;
+    /// }
+    ///
+    /// assert_eq!(grid.as_vec(), &vec![2, 3, 4, 5]);
+    /// ```
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter_mut()
     }
 }
 

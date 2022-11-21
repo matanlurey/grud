@@ -2,3 +2,13 @@
 name = "grud"
 version = "0.1.0"
 edition = "2021"
+authors = ["Matan Lurey <matan@lurey.org>"]
+description = "Store and access data in two-dimensional grids"
+repository = "https://github.com/matanlurey/grud"
+license = "MIT"
+keywords = ["grid", "2d"]
+categories = [
+  "command-line-interface",
+  "data-structures",
+  "game-development",
+]

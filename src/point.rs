@@ -33,3 +33,24 @@ impl Point for [usize; 2] {
         self[1]
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tuple_as_point() {
+        let point = (1, 2);
+        assert_eq!(point.x(), 1);
+        assert_eq!(point.y(), 2);
+        assert_eq!(point.to_index(2), 5);
+    }
+
+    #[test]
+    fn array_as_point() {
+        let point = [1, 2];
+        assert_eq!(point.x(), 1);
+        assert_eq!(point.y(), 2);
+        assert_eq!(point.to_index(2), 5);
+    }
+}

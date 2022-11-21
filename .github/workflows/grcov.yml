@@ -23,7 +23,8 @@ jobs:
           args: --tests
         env:
           CARGO_INCREMENTAL: 0
-          LLVM_PROFILE_FILE: "target/coverage/cargo-test-%p-%m.profraw"
+          # Hyphens don't work? https://github.com/actions-rs/grcov/issues/51
+          LLVM_PROFILE_FILE: "target/coverage/cargo_test_%p_%m.profraw"
           RUSTFLAGS: "-Cinstrument-coverage"
 
       - name: Run grcov

@@ -1,4 +1,4 @@
-//! TODO: Document.
+//! Utilities for defining and using 2-dimensional points in space (i.e. `(x, y)` coordinates).
 
 /// A 2-dimensional point.
 pub trait Point: Clone + Copy {

@@ -1,3 +1,7 @@
+//! Default implementation of a 2-dimensional grid of elements.
+//!
+//! See [`Grid`] for details.
+
 use std::{
     fmt::{Debug, Display},
     ops::{Index, IndexMut},

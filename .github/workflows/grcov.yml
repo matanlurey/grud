@@ -1,4 +1,4 @@
-on: [push, pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 name: Code Coverage
 
@@ -23,6 +23,7 @@ jobs:
         env:
           CARGO_INCREMENTAL: 0
           RUSTFLAGS: "-Cinstrument-coverage"
+          LLVM_PROFILE_FILE: "target/coverage/cargo-test-%p-%m.profraw"
 
       - name: Run grcov
         uses: actions-rs/grcov@v0.1

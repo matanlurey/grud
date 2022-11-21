@@ -86,14 +86,21 @@ where
 
     /// Given an index into the implementation vector, returns the underlying data.
     ///
+    /// This operator requires understanding the internal representation of data. For example,
+    /// a 3x3 Grid (i.e. `Grid::new(3, 3, "•")`) has the indexed locations laid out as such:
+    ///
+    /// ```txt
+    /// •0 •1 •2
+    /// •3 •4 •5
+    /// •6 •7 •8
+    /// ```
+    ///
     /// # Examples
     ///
     /// ```
     /// use grud::Grid;
     ///
     /// let grid = Grid::new(1, 1, "X");
-    ///
-    /// // Using a tuple to represent (width, height)
     /// assert_eq!(grid[0], "X");
     /// ```
     ///
@@ -109,33 +116,26 @@ impl<T> IndexMut<usize> for Grid<T>
 where
     T: Clone,
 {
-    /// Given a two-dimensional coordinate [`Point`], sets the underlying data.
+    /// Given an index into the implementation vector, sets the underlying data.
+    ///
+    /// This operator requires understanding the internal representation of data. For example,
+    /// a 3x3 Grid (i.e. `Grid::new(3, 3, "•")`) has the indexed locations laid out as such:
+    ///
+    /// ```txt
+    /// •0 •1 •2
+    /// •3 •4 •5
+    /// •6 •7 •8
+    /// ```
     ///
     /// # Examples
     ///
-    /// Using a tuple to represent `(width, height)`:
-    ///
     /// ```
     /// use grud::Grid;
     ///
     /// let mut grid = Grid::new(1, 1, "X");
+    /// grid[0] = "Y";
     ///
-    /// // Using a tuple to represent (width, height)
-    /// grid[(0, 0)] = "Y";
-    ///
-    /// # assert_eq!(grid[(0, 0)], "Y");
-    /// ```
-    ///
-    /// Using a array to represent `[width, height]`:
-    ///
-    /// ```
-    /// use grud::Grid;
-    ///
-    /// let mut grid = Grid::new(1, 1, "X");
-    ///
-    /// grid[(0, 0)] = "Y";
-    ///
-    /// # assert_eq!(grid[[0, 0]], "Y");
+    /// # assert_eq!(grid[0], "Y");
     /// ```
     ///
     /// # Panics
@@ -163,7 +163,6 @@ where
     /// use grud::Grid;
     ///
     /// let grid = Grid::new(1, 1, "X");
-    ///
     /// assert_eq!(grid[(0, 0)], "X");
     /// ```
     ///
@@ -173,7 +172,6 @@ where
     /// use grud::Grid;
     ///
     /// let grid = Grid::new(1, 1, "X");
-    ///
     /// assert_eq!(grid[[0, 0]], "X");
     /// ```
     ///
@@ -191,6 +189,35 @@ where
     T: Clone,
     I: Point,
 {
+    /// Given a two-dimensional coordinate [`Point`], sets the underlying data.
+    ///
+    /// # Examples
+    ///
+    /// Using a tuple to represent `(width, height)`:
+    ///
+    /// ```
+    /// use grud::Grid;
+    ///
+    /// let mut grid = Grid::new(1, 1, "X");
+    /// grid[(0, 0)] = "Y";
+    ///
+    /// # assert_eq!(grid[(0, 0)], "Y");
+    /// ```
+    ///
+    /// Using a array to represent `[width, height]`:
+    ///
+    /// ```
+    /// use grud::Grid;
+    ///
+    /// let mut grid = Grid::new(1, 1, "X");
+    /// grid[(0, 0)] = "Y";
+    ///
+    /// # assert_eq!(grid[[0, 0]], "Y");
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// If `index` is out of bounds.
     fn index_mut(&mut self, index: I) -> &mut Self::Output {
         let index = index.to_index(self.width());
         &mut self[index]

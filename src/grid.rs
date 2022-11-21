@@ -16,7 +16,6 @@ where
 {
     data: Vec<T>,
     width: usize,
-    height: usize,
 }
 
 impl<T> Grid<T>
@@ -36,7 +35,6 @@ where
         Self {
             data: vec![default; width * height],
             width,
-            height,
         }
     }
 
@@ -62,12 +60,7 @@ where
             "Data length {} not divisible by {width}",
             data.len()
         );
-        let height = data.len() / width;
-        Self {
-            data,
-            width,
-            height,
-        }
+        Self { data, width }
     }
 
     /// Returns the grid represnted as a flattened 2-dimensional vector.
@@ -140,7 +133,7 @@ where
     /// assert_eq!(grid.height(), 3);
     /// ```
     pub fn height(&self) -> usize {
-        self.height
+        self.data.len() / self.width()
     }
 
     /// Returns the total size of the grid as represented by `width * height`.
@@ -166,8 +159,8 @@ where
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Grid")
             .field("data", &self.data)
-            .field("width", &self.width)
-            .field("height", &self.height)
+            .field("width", &self.width())
+            .field("height", &self.height())
             .finish()
     }
 }
@@ -280,7 +273,6 @@ where
             return Self {
                 data: vec![],
                 width: 0,
-                height: 0,
             };
         }
         let width = data[0].len();
@@ -291,7 +283,6 @@ where
         Self {
             data: data.iter().flat_map(|v| v.clone()).collect(),
             width,
-            height,
         }
     }
 }
@@ -480,6 +471,54 @@ mod tests {
     #[should_panic]
     fn grid_from_matrix_not_consistent() {
         let _: Grid<_> = vec![vec!["A"], vec!["B", "C"]].into();
+    }
+
+    #[test]
+    fn grid_clone() {
+        let a: Grid<_> = vec![vec!["A", "B"], vec!["C", "D"]].into();
+        let b = a.clone();
+
+        assert_eq!(a.as_vec(), b.as_vec());
+    }
+
+    #[test]
+    fn grid_debug() {
+        let a: Grid<_> = vec![vec!["A", "B"], vec!["C", "D"]].into();
+        let a = format!("{:?}", a);
+
+        assert_eq!(
+            a,
+            "Grid { data: [\"A\", \"B\", \"C\", \"D\"], width: 2, height: 2 }"
+        );
+    }
+
+    #[test]
+    fn grid_display() {
+        let a: Grid<_> = vec![vec!["A", "B"], vec!["C", "D"]].into();
+        let a = format!("{}", a);
+
+        assert_eq!(a, "AB\nCD\n");
+    }
+
+    #[test]
+    fn grid_iter() {
+        let a: Grid<_> = vec![vec!["A", "B"], vec!["C", "D"]].into();
+        let v = a
+            .into_iter()
+            .map(|i| i.to_ascii_lowercase())
+            .collect::<Vec<String>>();
+
+        assert_eq!(v, vec!["a", "b", "c", "d"]);
+    }
+
+    #[test]
+    fn grid_iter_mut() {
+        let mut a: Grid<_> = vec![vec![1, 2], vec![3, 4]].into();
+        for i in &mut a {
+            *i += 1;
+        }
+
+        assert_eq!(a.as_vec(), &vec![2, 3, 4, 5]);
     }
 
     #[test]

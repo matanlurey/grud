@@ -22,10 +22,8 @@ jobs:
           command: test
           args: --tests
         env:
-          CARGO_INCREMENTAL: 0
-          # Hyphens don't work? https://github.com/actions-rs/grcov/issues/51
-          LLVM_PROFILE_FILE: "target/coverage/cargo_test_%p_%m.profraw"
-          RUSTFLAGS: "-Cinstrument-coverage"
+          CARGO_INCREMENTAL: "0"
+          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests"
 
       - name: Run grcov
         uses: actions-rs/grcov@v0.1
